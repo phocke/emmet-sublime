@@ -50,7 +50,6 @@ def show_pyv8_error(exit_code):
 	if 'PyV8' not in sys.modules:
 		sublime.error_message('Error while loading PyV8 binary: exit code %s \nTry to manually install PyV8 from\nhttps://github.com/emmetio/pyv8-binaries' % exit_code)
 
-
 def active_view():
 	return sublime.active_window().active_view()
 
@@ -134,6 +133,23 @@ def should_perform_action(name, view=None):
 
 	return name not in re.split(r'\s*,\s*', disabled_actions.strip())
 
+def should_handle_tab_key():
+	view = active_view()
+	scopes = settings.get('disabled_single_snippet_for_scopes', None)
+	cur_scope = view.syntax_name(view.sel()[0].begin())
+	if not scopes or not sublime.score_selector(cur_scope, scopes):
+		return True
+
+	abbr = ctx.js().locals.pyExtractAbbreviation()
+	if not re.match(r'^\w+$', abbr):
+		# it's a complex expression
+		return True
+
+	known_tags = settings.get('known_html_tags', '').split()
+	if abbr in known_tags or ctx.js().locals.pyHasSnippet(abbr):
+		return True
+
+	return False
 
 # load settings
 settings = sublime.load_settings('Emmet.sublime-settings')
