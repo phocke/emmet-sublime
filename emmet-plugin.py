@@ -145,6 +145,10 @@ def should_handle_tab_key():
 		# it's a complex expression
 		return True
 
+	if re.match(r'^(lorem|lipsum)\d*$', abbr):
+		# hardcoded Lorem Ipsum generator
+		return True
+
 	known_tags = settings.get('known_html_tags', '').split()
 	if abbr in known_tags or ctx.js().locals.pyHasSnippet(abbr):
 		return True
@@ -276,7 +280,7 @@ class TabExpandHandler(sublime_plugin.EventListener):
 		if key != 'is_abbreviation':
 			return None
 
-		if not check_context():
+		if not check_context() or not should_handle_tab_key():
 			return False
 
 		# print(view.syntax_name(view.sel()[0].begin()))
