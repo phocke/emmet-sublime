@@ -20,6 +20,9 @@ CHECK_INTERVAL = 60 * 60 * 24
 # CHECK_INTERVAL = 1
 core_files = ['emmet-app.js', 'python-wrapper.js']
 
+def log(message):
+	print('Emmet: %s' % message)
+
 def get_arch():
 	"Returns architecture name for PyV8 binary"
 	is_64bit = sys.maxsize > 2**32
@@ -312,6 +315,7 @@ class Context():
 	def js(self):
 		"Returns JS context"
 		if not self._ctx:
+			log('Creating JS context')
 			if 'PyV8' not in sys.modules:
 				if self.pyv8_state == 'loaded':
 					import_pyv8()
@@ -321,6 +325,7 @@ class Context():
 
 			if self._use_unicode is None:
 				self._use_unicode = should_use_unicode()
+				log('should use unicode? %s' % self._use_unicode)
 
 			glue = u'\n' if self._use_unicode else '\n'
 			core_src = [self.read_js_file(make_path(f)) for f in self._core_files]
@@ -367,13 +372,18 @@ class Context():
 		self._should_load_extension = True
 
 	def read_js_file(self, file_path):
+		log('Reading %s' % file_path)
 		if self._use_unicode:
+			log('Read as unicode')
 			f = codecs.open(file_path, 'r', 'utf-8')
 		else:
+			log('Read as ascii')
 			f = open(file_path, 'r')
 
 		content = f.read()
 		f.close()
+
+		log('Content length: %d' % len(content))
 
 		return content
 

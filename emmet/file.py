@@ -15,6 +15,7 @@ class File():
 		@type path: str
 		@return: str
 		"""
+		print('Emmet Ext: Reading %s' % path)
 		content = None
 		try:
 			fp = open(path, 'rb')
@@ -23,6 +24,7 @@ class File():
 		except:
 			pass
 		
+		print('Emmet Ext: File content %d' % len(content))
 		# return as array of character codes since PyV8 may corrupt
 		# binary data when python string is translated into JS string
 		return [ord(ch) for ch in content]
